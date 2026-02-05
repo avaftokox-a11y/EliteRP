@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteRP - Zaawansowany Bot RolePlay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8E44AD;
+            --primary-dark: #6C3483;
+            --secondary: #3498DB;
+            --accent: #2ECC71;
+            --danger: #E74C3C;
+            --dark: #1A1A2E;
+            --darker: #0F0F1A;
+            --light: #F8F9FA;
+            --gray: #6C757D;
+            --gradient: linear-gradient(135deg, #8E44AD 0%, #3498DB 50%, #2ECC71 100%);
+            --gradient-dark: linear-gradient(135deg, #6C3483 0%, #2980B9 50%, #27AE60 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* ANIMACJE */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* NAVBAR */
+        .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 2.2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: var(--gradient);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(142, 68, 173, 0.3);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            background: linear-gradient(rgba(15, 15, 26, 0.9), rgba(15, 15, 26, 0.9)), 
+                        url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            margin-top: 80px;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #ccc;
+            max-width: 600px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid var(--primary);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(142, 68, 173, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* FEATURES SECTION */
+        .section-title {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .features {
+            padding: 6rem 5%;
+            background: var(--dark);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(142, 68, 173, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(142, 68, 173, 0.2);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        
+        .feature-card p {
+            color: #aaa;
+        }
+        
+        /* COMMANDS SECTION */
+        .commands {
+            padding: 6rem 5%;
+            background: var(--darker);
+        }
+        
+        .commands-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            color: var(--light);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .tab-btn.active {
+            background: var(--gradient);
+            border-color: var(--primary);
+        }
+        
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .command-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .command-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .command-name {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .command-category {
+            background: rgba(142, 68, 173, 0.2);
+            color: var(--primary);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .command-desc {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .command-usage {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            font-family: monospace;
+            color: var(--accent);
+        }
+        
+        /* INSTALLATION */
+        .installation {
+            padding: 6rem 5%;
+            background: var(--dark);
+            text-align: center;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem auto;
+            max-width: 1000px;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 250px;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+        }
+        
+        .step h3 {
+            margin: 1.5rem 0 1rem;
+            color: white;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: left;
+            margin: 2rem auto;
+            max-width: 800px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        
+        /* FOOTER */
+        .footer {
+            background: rgba(10, 10, 20, 0.95);
+            padding: 4rem 5% 2rem;
+            border-top: 2px solid var(--primary);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-section h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--gradient);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            .hero h1 { font-size: 3rem; }
+            .section-title { font-size: 2.5rem; }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: var(--dark);
+                flex-direction: column;
+                padding: 2rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: all 0.3s;
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            
+            .hero h1 { font-size: 2.5rem; }
+            .hero-buttons { flex-direction: column; }
+        }
+        
+        @media (max-width: 576px) {
+            .hero h1 { font-size: 2rem; }
+            .section-title { font-size: 2rem; }
+            .stats { justify-content: center; }
+        }
+        
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gradient-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <i class="fas fa-crown"></i>
+            EliteRP
+        </a>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#commands">Commands</a>
+            <a href="#install">Installation</a>
+            <a href="#stats">Statistics</a>
+        </div>
+        
+        <a href="https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot&permissions=8" 
+           target="_blank" class="cta-button">
+            <i class="fab fa-discord"></i> Add to Discord
+        </a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Elite RolePlay Discord Bot</h1>
+            <p>Zaawansowany system zarządzania serwerem RolePlay. Kompletne narzędzia do prowadzenia realisticznego RP z systemem ekonomii, pojazdów, dokumentów i administracji.</p>
+            
+            <div class="hero-buttons">
+                <a href="https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot&permissions=8" 
+                   target="_blank" class="cta-button">
+                    <i class="fab fa-discord"></i> Dodaj bota
+                </a>
+                <a href="#features" class="btn-secondary">
+                    <i class="fas fa-star"></i> Poznaj funkcje
+                </a>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">40+</div>
+                    <div class="stat-label">Commands</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">9</div>
+                    <div class="stat-label">Systems</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Free</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features" id="features">
+        <h2 class="section-title">Systemy EliteRP</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <h3>System Dowodów</h3>
+                <p>Kompletny system dokumentów tożsamości z ważnością, danymi osobowymi i zarządzaniem. Gracze mogą tworzyć, pokazywać i unieważniać dowody.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3>System Bankowy</h3>
+                <p>Zaawansowana ekonomia z kontami bankowymi, przelewami, historią transakcji. Każdy gracz otrzymuje własny numer konta i saldo startowe.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h3>System Pojazdów</h3>
+                <p>Rejestracja pojazdów z tablicami, modelami, kolorami. System mandatów, ubezpieczeń i statusu kradzieży pojazdów.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <h3>System Administracyjny</h3>
+                <p>Warny z punktami karnymi, mandaty drogowe, zarządzanie licencjami. Automatyczne bany przy przekroczeniu limitów.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-theater-masks"></i>
+                </div>
+                <h3>System RP</h3>
+                <p>Sesje RolePlay z timerem, uczestnikami i statusem. Rozpoczynanie i kończenie sesji z automatycznym logowaniem.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <h3>System Ticketów</h3>
+                <p>Zgłoszenia do administracji z priorytetami, modalami i zarządzaniem. Automatyczne tworzenie kanałów dla ticketów.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMMANDS SECTION -->
+    <section class="commands" id="commands">
+        <h2 class="section-title">Dostępne Komendy</h2>
+        
+        <div class="commands-tabs">
+            <button class="tab-btn active" data-tab="all">Wszystkie</button>
+            <button class="tab-btn" data-tab="rp">System RP</button>
+            <button class="tab-btn" data-tab="economy">Ekonomia</button>
+            <button class="tab-btn" data-tab="admin">Administracja</button>
+            <button class="tab-btn" data-tab="utility">Narzędzia</button>
+        </div>
+        
+        <div class="commands-grid">
+            <!-- Dowód -->
+            <div class="command-card" data-category="utility">
+                <div class="command-header">
+                    <span class="command-name">/dowod wytworz</span>
+                    <span class="command-category">Utility</span>
+                </div>
+                <p class="command-desc">Wyrób nowy dowód osobisty z danymi gracza</p>
+                <div class="command-usage">nick, imie, data, obywatelstwo, postac, zdjecie</div>
+            </div>
+            
+            <!-- Bank -->
+            <div class="command-card" data-category="economy">
+                <div class="command-header">
+                    <span class="command-name">/bank przelew</span>
+                    <span class="command-category">Economy</span>
+                </div>
+                <p class="command-desc">Przelej środki na konto innego gracza</p>
+                <div class="command-usage">odbiorca, kwota</div>
+            </div>
+            
+            <!-- RP -->
+            <div class="command-card" data-category="rp">
+                <div class="command-header">
+                    <span class="command-name">/rp start</span>
+                    <span class="command-category">RP</span>
+                </div>
+                <p class="command-desc">Rozpocznij sesję RolePlay</p>
+                <div class="command-usage">czas (w minutach)</div>
+            </div>
+            
+            <!-- Admin -->
+            <div class="command-card" data-category="admin">
+                <div class="command-header">
+                    <span class="command-name">/admin warn</span>
+                    <span class="command-category">Admin</span>
+                </div>
+                <p class="command-desc">Nadaj warna graczowi</p>
+                <div class="command-usage">gracz, powod, punkty</div>
+            </div>
+            
+            <!-- Pojazd -->
+            <div class="command-card" data-category="utility">
+                <div class="command-header">
+                    <span class="command-name">/pojazd zarejestruj</span>
+                    <span class="command-category">Utility</span>
+                </div>
+                <p class="command-desc">Zarejestruj nowy pojazd</p>
+                <div class="command-usage">tablica, model, kolor</div>
+            </div>
+            
+            <!-- Ticket -->
+            <div class="command-card" data-category="utility">
+                <div class="command-header">
+                    <span class="command-name">/ticket utworz</span>
+                    <span class="command-category">Utility</span>
+                </div>
+                <p class="command-desc">Utwórz nowy ticket zgłoszeniowy</p>
+                <div class="command-usage">powod, priorytet</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INSTALLATION -->
+    <section class="installation" id="install">
+        <h2 class="section-title">Jak Zacząć?</h2>
+        <p style="max-width: 800px; margin: 0 auto 3rem; color: #aaa;">Dodaj EliteRP na swój serwer Discord w 4 proste kroki</p>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <i class="fas fa-mouse-pointer" style="font-size: 2.5rem; color: var(--primary);"></i>
+                <h3>Kliknij "Add Bot"</h3>
+                <p>Kliknij przycisk powyżej aby dodać bota na swój serwer Discord</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <i class="fas fa-cogs" style="font-size: 2.5rem; color: var(--primary);"></i>
+                <h3>Skonfiguruj Uprawnienia</h3>
+                <p>Nadaj botowi odpowiednie uprawnienia na swoim serwerze</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <i class="fas fa-sliders-h" style="font-size: 2.5rem; color: var(--primary);"></i>
+                <h3>Ustawienia Serwera</h3>
+                <p>Skonfiguruj kanały powitalne, logów i ogłoszeń</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <i class="fas fa-gamepad" style="font-size: 2.5rem; color: var(--primary);"></i>
+                <h3>Rozpocznij RP!</h3>
+                <p>Użyj komendy /pomoc aby poznać wszystkie możliwości</p>
+            </div>
+        </div>
+        
+        <div class="code-block">
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">Quick Setup:</h3>
+            <code style="color: #fff;">
+                // 1. Dodaj bota na serwer<br>
+                // 2. Użyj /ustawienia kanal_powitalny #nazwa-kanalu<br>
+                // 3. Użyj /ustawienia kanal_logow #nazwa-kanalu<br>
+                // 4. Poinformuj graczy o komendzie /dowod wytworz
+            </code>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>EliteRP</h3>
+                <p>Zaawansowany bot RolePlay dla Discord. Kompletny system zarządzania serwerem RP z pełną ekonomią, administracją i narzędziami.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#commands">Commands</a></li>
+                    <li><a href="#install">Installation</a></li>
+                    <li><a href="#stats">Statistics</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Systems</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Document System</a></li>
+                    <li><a href="#">Bank System</a></li>
+                    <li><a href="#">Vehicle System</a></li>
+                    <li><a href="#">Administration</a></li>
+                    <li><a href="#">RP Sessions</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Tutorials</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Bug Report</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2026 EliteRP Bot. All rights reserved. | Designed for RolePlay Communities</p>
+            <p style="margin-top: 0.5rem; color: #888;">Not affiliated with Discord Inc.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+        
+        // Command filtering
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const commandCards = document.querySelectorAll('.command-card');
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                tabBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                const filter = btn.getAttribute('data-tab');
+                
+                commandCards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                        }, 10);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Parallax effect on hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.backgroundPosition = `center ${scrolled * 0.5}px`;
+            }
+        });
+        
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.8s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all feature cards and command cards
+        document.querySelectorAll('.feature-card, .command-card, .step').forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+    </script>
+</body>
+  </html>
